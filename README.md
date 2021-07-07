@@ -1,4 +1,5 @@
 ![image1](algorandFastAPI.jpg)
+This repository is part of the [article](https://developer.algorand.org/solutions/getting-started-with-python-algorand-sdk-and-fastapi/)
 # Getting started with Python Algorand SDK and FastAPI
 This FastAPI application implements some Algorand blockchain processes using `py-algorand-sdk`.
 
