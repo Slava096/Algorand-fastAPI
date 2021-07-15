@@ -1,5 +1,6 @@
 from typing import Optional
 from fastapi import FastAPI
+import time
 
 from algosdk import account, encoding , mnemonic 
 from algosdk.future.transaction import PaymentTxn
@@ -27,6 +28,21 @@ def create_account():                                   #Create a function that 
     passphrase = mnemonic.from_private_key(private_key)
     
     return {"address":address,"passphrase":passphrase}
+
+
+@app.get("/account/balance/{account}")
+def get_assets(Adress:str,asset_id:int):                                  
+    info=algod_client.account_info(Adress)
+    if asset_id==0:
+        balance=algod_client.account_info(Adress)["amount"]
+        return {"balance":balance,"asset-id":0,"asset_name":"microAlgos"}
+
+    for asset in info["assets"]:
+        if asset["asset-id"]==asset_id:
+            asset_name=indexer_client.search_assets(asset_id=asset_id)["assets"][0]["params"]["name"]
+
+            return {"balance":asset["amount"],"asset-id":asset["asset-id"],"asset_name":asset_name}
+
 
 @app.post("/transaction")
 def create_transaction(transaction:Transaction):
@@ -56,8 +72,8 @@ def get_transaction_by_ID(transaction_ID:str):         #Create a function that r
     return indexer_client.transaction(transaction_ID)
 
 @app.get("/transactions/{account}")
-def get_account_transactions(account:str):                          #Create a function that returns all transactions related to the account
-    return indexer_client.search_transactions_by_address(account)
+def get_account_transactions(account:str, start_timestamp: Optional[str] = None , end_timestamp: Optional[str] = None , asset_id: Optional[int] = None):                          #Create a function that returns all transactions related to the account
+    return indexer_client.search_transactions_by_address(account,start_time=start_timestamp,end_time=end_timestamp,asset_id=asset_id)
 
 @app.post("/asset")
 def create_asset(asset:Asset):
@@ -91,3 +107,8 @@ def create_asset(asset:Asset):
 @app.get("/assets")
 def get_assets():                                   #Create a function that returns all existing assets
     return indexer_client.search_assets() 
+
+@app.get("/assets/{asset_id}/transactions")
+def get_assets(asset_id:int ,start_timestamp: Optional[str] = None , end_timestamp: Optional[str] = None):                                 
+    return indexer_client.search_asset_transactions(asset_id , start_time = start_timestamp , end_time = end_timestamp) 
+
