@@ -30,7 +30,7 @@ def create_account():                                   #Create a function that 
     return {"address":address,"passphrase":passphrase}
 
 
-@app.get("/account/balance/{account}")
+@app.get("/account/{account}/balance")
 def get_assets(Adress:str,asset_id:int):                                  
     info=algod_client.account_info(Adress)
     if asset_id==0:
