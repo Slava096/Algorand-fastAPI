@@ -42,7 +42,12 @@ def get_assets(Adress:str,asset_id:int):
             asset_name=indexer_client.search_assets(asset_id=asset_id)["assets"][0]["params"]["name"]
 
             return {"balance":asset["amount"],"asset-id":asset["asset-id"],"asset_name":asset_name}
-
+    try:
+        asset_name=indexer_client.search_assets(asset_id=asset_id)["assets"][0]["params"]["name"]
+    except:
+        return {"ERROR":"Asset not found"}
+    return {"balance":0,"asset-id":asset_id,"asset_name":asset_name}
+    
 
 @app.post("/transaction")
 def create_transaction(transaction:Transaction):
